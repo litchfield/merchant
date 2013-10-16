@@ -30,10 +30,10 @@ class PinChargeForm(forms.ModelForm):
     number = CardNumberField()
     expiry_month = forms.IntegerField(min_value=1, 
                             max_value=12,
-                            widget=forms.NumberInput(attrs={'placeholder':'MM'}))
+                            widget=forms.TextInput(attrs={'placeholder':'MM'}))
     expiry_year = forms.IntegerField(min_value=date.today().year, 
                             max_value=date.today().year+20, 
-                            widget=forms.NumberInput(attrs={'placeholder':'YYYY'}))
+                            widget=forms.TextInput(attrs={'placeholder':'YYYY'}))
     cvc = forms.IntegerField(min_value=0, max_value=9999)
     email = forms.EmailField()
     description = forms.CharField(max_length=255)
