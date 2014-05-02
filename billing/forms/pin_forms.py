@@ -36,7 +36,7 @@ class PinChargeForm(forms.ModelForm):
                             widget=forms.TextInput(attrs={'placeholder':'YYYY'}))
     cvc = forms.IntegerField(min_value=0, max_value=9999)
     email = forms.EmailField()
-    description = forms.CharField(max_length=255)
+    description = forms.CharField(max_length=255, required=False)
 
     user_fields = ('email', 'first_name', 'last_name')
 
@@ -56,8 +56,9 @@ class PinChargeForm(forms.ModelForm):
                 if value:
                     self.fields[field].initial = value
                     
-    def get_credit_card(self):
+    def get_credit_card(self, **kwargs):
         d = self.cleaned_data
+        d.update(kwargs)
         d['month'] = d['expiry_month']
         d['year'] = d['expiry_year']
         d['verification_value'] = d['cvc']
