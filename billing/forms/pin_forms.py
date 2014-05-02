@@ -26,6 +26,16 @@ def verify_mod10(ccnum):
             double = (double + 1) % 2
     return ((sum % 10) == 0)
 
+class CardForm(forms.Form):
+    number = CardNumberField()
+    expiry_month = forms.IntegerField(min_value=1, 
+                            max_value=12,
+                            widget=forms.TextInput(attrs={'placeholder':'MM'}))
+    expiry_year = forms.IntegerField(min_value=date.today().year, 
+                            max_value=date.today().year+20, 
+                            widget=forms.TextInput(attrs={'placeholder':'YYYY'}))
+    cvc = forms.IntegerField(min_value=0, max_value=9999)
+
 class PinChargeForm(forms.ModelForm):
     number = CardNumberField()
     expiry_month = forms.IntegerField(min_value=1, 
