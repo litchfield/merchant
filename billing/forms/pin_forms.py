@@ -8,6 +8,10 @@ class CardNumberField(forms.CharField):
     """
     Field for entering card number, validates using mod 10
     """
+    def __init__(self, *args, **kwargs):
+        self.max_length, self.min_length = 20, 12
+        super(CardNumberField, self).__init__(*args, **kwargs)
+
     def clean(self, value):
         value = super(CardNumberField, self).clean(value)
         value = value.replace('-', '').replace(' ', '')
@@ -30,11 +34,12 @@ class CardForm(forms.Form):
     number = CardNumberField()
     expiry_month = forms.IntegerField(min_value=1, 
                             max_value=12,
-                            widget=forms.TextInput(attrs={'placeholder':'MM'}))
+                            widget=forms.TextInput(attrs={'placeholder':'MM', 'maxlength':'2'}))
     expiry_year = forms.IntegerField(min_value=date.today().year, 
                             max_value=date.today().year+20, 
-                            widget=forms.TextInput(attrs={'placeholder':'YYYY'}))
-    cvc = forms.IntegerField(min_value=0, max_value=9999)
+                            widget=forms.TextInput(attrs={'placeholder':'YYYY', 'maxlength':'4'}))
+    cvc = forms.IntegerField(min_value=0, max_value=9999, 
+                            widget=forms.TextInput(attrs={'maxlength':'4'}))
 
 class PinChargeForm(forms.ModelForm):
     number = CardNumberField()

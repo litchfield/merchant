@@ -99,6 +99,7 @@ class PinGateway(Gateway):
             for key, value in response.items():
                 if key != 'card':
                     setattr(charge, key, value)
+            charge.amount = Decimal(charge.amount) / Decimal("100.00")
             charge.error_message = charge.error_message or ''
             charge.save()
         return self._pin_response(success, resp, 'purchase', charge)
@@ -142,6 +143,7 @@ class PinGateway(Gateway):
             for key, value in resp['response'].items():
                 if key != 'card':
                     setattr(charge, key, value)
+            charge.amount = Decimal(charge.amount) / Decimal("100.00")
             charge.error_message = charge.error_message or ''
             charge.save()
         return self._pin_response(success, resp, 'capture')
