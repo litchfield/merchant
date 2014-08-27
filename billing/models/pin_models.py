@@ -34,7 +34,7 @@ class PinCustomer(models.Model):
     card = models.ForeignKey(PinCard, related_name='customers')
     email = models.EmailField()
     created_at = models.DateTimeField()
-    user = models.OneToOneField(User, related_name='pin_customer', blank=True, null=True)
+    user = models.ForeignKey(User, related_name='pin_customers', blank=True, null=True)
 
     class Meta:
         app_label = 'billing'
