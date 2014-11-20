@@ -158,9 +158,11 @@ class PinGateway(Gateway):
         if commit and 'response' in resp:
             response = copy(resp['response'])
             del response['card']['name']
-            card = PinCard(**response['card'])
+            card = PinCard()
             card.first_name = credit_card.first_name
             card.last_name = credit_card.last_name
+            for key, value in response['card'].items():
+                setattr(card, key, value)
             card.save()
             customer = PinCustomer(card=card)
             for key, value in response.items():
