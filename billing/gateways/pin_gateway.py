@@ -5,6 +5,7 @@ except ImportError:
 
 import requests
 from copy import copy
+from decimal import Decimal
 from django.conf import settings
 from billing import CreditCard
 from billing import Gateway, GatewayNotConfigured
@@ -16,6 +17,7 @@ SSIG = {
     True:  ('SUCCESS', transaction_was_successful),
     False: ('FAILURE', transaction_was_unsuccessful),
 }
+
 
 class PinGateway(Gateway):
     default_currency = "AUD"
@@ -148,27 +150,40 @@ class PinGateway(Gateway):
         raise NotImplementedError
 
     def store(self, credit_card, options=None, commit=True):
-        "Customers"
+        """ Customers - https://pin.net.au/docs/api/customers """
         data = {
             'email': options['email'],
             'card': self._pin_card(credit_card, options),
         }
+
         if "token" in options:
-            url = '/%s/customers' % options['token']
+            url = '/customers/{0}'.format(options['token'])
+            resp = self._pin_request('put', url, data)
         else:
             url = '/customers'
-        resp = self._pin_request('post', url, data)
-        customer = None
+            resp = self._pin_request('post', url, data)
+
+        if "token" in options:
+            try:
+                customer = PinCustomer.objects.get(token=options['token'])
+            except PinCustomer.DoesNotExist:
+                customer = None
+        else:
+            customer = None
+
         if commit and 'response' in resp:
             response = copy(resp['response'])
             del response['card']['name']
-            card = PinCard()
+            card = PinCard(**response['card'])
             card.first_name = credit_card.first_name
             card.last_name = credit_card.last_name
-            for key, value in response['card'].items():
-                setattr(card, key, value)
             card.save()
-            customer = PinCustomer(card=card)
+
+            if customer is None:
+                customer = PinCustomer(card=card)
+            else:
+                customer.card = card
+
             for key, value in response.items():
                 if key != 'card':
                     setattr(customer, key, value)
