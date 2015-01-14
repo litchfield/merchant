@@ -94,7 +94,10 @@ class PinGateway(Gateway):
         if commit and 'response' in resp:
             response = copy(resp['response'])
             del response['card']['name']
-            card = PinCard(**response['card'])
+            card = PinCard()
+            for key, value in data['card'].items():
+                if hasattr(card, key):
+                    setattr(card, key, value)
             card.first_name = credit_card.first_name
             card.last_name = credit_card.last_name
             card.save()
@@ -174,7 +177,10 @@ class PinGateway(Gateway):
         if commit and 'response' in resp:
             response = copy(resp['response'])
             del response['card']['name']
-            card = PinCard(**response['card'])
+            card = PinCard()
+            for key, value in data['card'].items():
+                if hasattr(card, key):
+                    setattr(card, key, value)
             card.first_name = credit_card.first_name
             card.last_name = credit_card.last_name
             card.save()
